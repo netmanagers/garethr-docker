@@ -86,7 +86,16 @@ define docker::run(
     hasstatus  => $hasstatus,
     hasrestart => $hasrestart,
     provider   => $provider,
-    require    => File[$initscript],
+    require    => [Class['docker'],
+                   File[$initscript]
+                  ],
+  }
+
+  if str2bool($restart_service) {
+    File[$initscript] ~> Service["docker-${title}"]
+  }
+  else {
+    File[$initscript] -> Service["docker-${title}"]
   }
 }
 
